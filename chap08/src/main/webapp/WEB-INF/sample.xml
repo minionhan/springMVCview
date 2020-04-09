@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:mvc="http://www.springframework.org/schema/mvc"
+   xmlns:context="http://www.springframework.org/schema/context"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/mvc
+      http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+   
+   <mvc:annotation-driven conversion-service="formattingConversionService"/>
+   
+	<bean id="formattingConversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="formatters">
+			<set>
+				<bean class="service.MoneyFormatter"/>
+			</set>
+		</property>	
+	</bean>
+
+   <bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+   	<property name="order" value="1"/>
+   </bean>
+   
+   <bean id="localeResolver" 
+   		class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+      
+       
+	<mvc:interceptors>
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<property name="paramName" value="language"/>
+		</bean>
+	</mvc:interceptors>
+	
+	
+   <mvc:view-controller path="/index" view-name="index"/>
+
+   <mvc:annotation-driven/>
+   <!-- 2번 -->
+   <!-- controller, service를 자동으로 scaning하게 만들기 위해 -->
+   <!-- bean으로 만들어서 wiring한 것이다 -->
+   <context:component-scan base-package="controller,service"/>
+   
+   
+   <!-- 3번 -->
+   <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+         <property name="prefix" value="/WEB-INF/view/"/>
+         <property name="suffix" value=".jsp"/>
+   </bean>
+   
+   <!-- 4번 -->
+   <mvc:resources mapping="/images/**" location="/images/, /WEB-INF/resources/"
+      cache-period="60"/><!-- 60초 동안 보관해 놓고 있어라 -->
+   
+
+   <!-- 6번 error처리 view단에서 처리하는게 좋다-->
+   <bean id="messageSource"
+      class="org.springframework.context.support.ResourceBundleMessageSource">
+      <property name="basenames">
+         <list>
+            <value>message.error</value>
+            <value>message.label</value>
+         </list>
+      </property>
+      <property name="defaultEncoding" value="UTF-8" />
+   </bean>
+   
+  
+
+   
+   
+</beans>
